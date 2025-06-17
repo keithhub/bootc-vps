@@ -21,9 +21,15 @@ RUN rm -rf /var/{lib,cache,log}
 RUN bootc container lint
 
 
+# cyprus
 
-# beth
+FROM base AS cyprus
 
-FROM base AS beth
+RUN bootc container lint
+
+
+# dogwood
+
+FROM base AS dogwood
 
 RUN bootc container lint

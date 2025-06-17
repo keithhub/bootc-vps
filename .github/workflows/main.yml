@@ -29,7 +29,7 @@ jobs:
         id: prep
         run: |
           # Single source of truth for the host list
-          hosts='["beth"]'
+          hosts='["cyprus", "dogwood"]'
           echo "hosts=${hosts}" >> $GITHUB_OUTPUT
 
           # Generate the full matrix for other jobs to consume
@@ -135,7 +135,7 @@ jobs:
       - name: Upload Kickstart artifact for ${{ matrix.host }}
         uses: actions/upload-artifact@v4
         with:
-          name: kickstart-files
+          name: kickstart-files-${{ matrix.host }}
           path: ./kickstart_files/${{ matrix.host }}.ks
 
   deploy-kickstarts:
@@ -149,13 +149,13 @@ jobs:
         - name: Download all Kickstart artifacts
           uses: actions/download-artifact@v4
           with:
-            name: kickstart-files
+            pattern: kickstart-files-*
             path: ./pages/
 
         - name: Upload Pages artifact
           uses: actions/upload-pages-artifact@v3
           with:
-            path: './pages/'
+            path: ./pages/
 
         - name: Deploy to GitHub Pages
           id: deployment
