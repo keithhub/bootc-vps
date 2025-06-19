@@ -4,6 +4,13 @@
 
 FROM quay.io/almalinuxorg/almalinux-bootc:10.0 AS base
 
+# Set default target
+RUN ln -sfr /usr/lib/systemd/system/multi-user.target /usr/lib/systemd/system/default.target
+
+# Allow auto-updates
+RUN ln -sr /usr/lib/systemd/system/bootc-fetch-apply-updates.timer /usr/lib/systemd/system/timers.target.wants/
+RUN ln -sr /usr/lib/systemd/system/podman-auto-update.timer /usr/lib/systemd/system/timers.target.wants/
+
 # Clean up
 RUN dnf clean all
 RUN echo Brute-force cleaning /var \
