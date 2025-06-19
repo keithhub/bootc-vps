@@ -11,6 +11,10 @@ RUN ln -sfr /usr/lib/systemd/system/multi-user.target /usr/lib/systemd/system/de
 RUN ln -sr /usr/lib/systemd/system/bootc-fetch-apply-updates.timer /usr/lib/systemd/system/timers.target.wants/
 RUN ln -sr /usr/lib/systemd/system/podman-auto-update.timer /usr/lib/systemd/system/timers.target.wants/
 
+# Install Linode DNS updater
+COPY linode-dns-updater/usr /usr
+RUN ln -sr /usr/lib/systemd/system/update-linode-dns.timer /usr/lib/systemd/system/timers.target.wants/
+
 # Clean up
 RUN dnf clean all
 RUN echo Brute-force cleaning /var \
