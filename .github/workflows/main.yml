@@ -55,7 +55,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
   build-base-image:
-    name: Build Base Image
+    name: Build Base Images
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -70,6 +70,15 @@ jobs:
           context: .
           file: ./Containerfile
           target: base
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build Container Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Containerfile
+          target: headless
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
