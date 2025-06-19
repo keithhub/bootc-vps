@@ -15,6 +15,18 @@ RUN ln -sr /usr/lib/systemd/system/podman-auto-update.timer /usr/lib/systemd/sys
 COPY linode-dns-updater/usr /usr
 RUN ln -sr /usr/lib/systemd/system/update-linode-dns.timer /usr/lib/systemd/system/timers.target.wants/
 
+# Install Distrobox
+ADD --checksum=sha256:3ecbce9b8c5b5df941f986798ffa6ea7fdf742223d42204207974c4323d5b9fc \
+    https://github.com/89luca89/distrobox/archive/refs/tags/1.8.1.2.tar.gz \
+    /tmp/distrobox/source.tar.gz
+RUN <<EORUN
+cd /tmp/distrobox
+tar -x --strip-components=1 -f source.tar.gz
+./install --prefix /usr
+cd /
+rm -fr /tmp/distrobox
+EORUN
+
 # Clean up
 RUN dnf clean all
 RUN echo Brute-force cleaning /var \
