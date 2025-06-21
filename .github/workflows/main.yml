@@ -29,7 +29,7 @@ jobs:
         id: prep
         run: |
           # Single source of truth for the host list
-          hosts='["cyprus", "dogwood"]'
+          hosts='["cherry", "cyprus", "dogwood", "elm"]'
           echo "hosts=${hosts}" >> $GITHUB_OUTPUT
 
           # Generate the full matrix for other jobs to consume

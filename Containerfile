@@ -59,6 +59,15 @@ RUN bootc container lint
 
 
 #
+# cherry
+#
+
+FROM headless AS cherry
+
+RUN bootc container lint
+
+
+#
 # cyprus
 #
 
@@ -72,5 +81,14 @@ RUN bootc container lint
 #
 
 FROM headless AS dogwood
+
+RUN bootc container lint
+
+
+#
+# elm
+#
+
+FROM headless AS elm
 
 RUN bootc container lint
