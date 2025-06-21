@@ -4,28 +4,24 @@
 
 FROM quay.io/almalinuxorg/almalinux-bootc:10.0 AS base
 
+# Install common packages
+RUN <<EORUN
+dnf config-manager --set-enabled crb
+dnf install -y epel-release
+dnf install -y distrobox
+dnf clean all
+EORUN
+
+# Install Linode DNS updater
+COPY linode-dns-updater/usr /usr
+RUN ln -sr /usr/lib/systemd/system/update-linode-dns.timer /usr/lib/systemd/system/timers.target.wants/
+
 # Set default target
 RUN ln -sfr /usr/lib/systemd/system/multi-user.target /usr/lib/systemd/system/default.target
 
 # Allow auto-updates
 RUN ln -sr /usr/lib/systemd/system/bootc-fetch-apply-updates.timer /usr/lib/systemd/system/timers.target.wants/
 RUN ln -sr /usr/lib/systemd/system/podman-auto-update.timer /usr/lib/systemd/system/timers.target.wants/
-
-# Install Linode DNS updater
-COPY linode-dns-updater/usr /usr
-RUN ln -sr /usr/lib/systemd/system/update-linode-dns.timer /usr/lib/systemd/system/timers.target.wants/
-
-# Install Distrobox
-ADD --checksum=sha256:3ecbce9b8c5b5df941f986798ffa6ea7fdf742223d42204207974c4323d5b9fc \
-    https://github.com/89luca89/distrobox/archive/refs/tags/1.8.1.2.tar.gz \
-    /tmp/distrobox/source.tar.gz
-RUN <<EORUN
-cd /tmp/distrobox
-tar -x --strip-components=1 -f source.tar.gz
-./install --prefix /usr
-cd /
-rm -fr /tmp/distrobox
-EORUN
 
 # Clean up
 RUN dnf clean all
