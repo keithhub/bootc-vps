@@ -50,6 +50,7 @@ RUN dnf install -y clevis-dracut clevis-luks clevis-systemd \
 RUN sed -E -i -e 's/^((shadow|gshadow):\s+files)$/\1 systemd/' \
     /usr/share/authselect/*/*/nsswitch.conf \
     /etc/authselect/nsswitch.conf
+COPY users/etc /etc
 
 # Clean up
 RUN dnf clean all
