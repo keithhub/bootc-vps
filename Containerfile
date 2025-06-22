@@ -45,6 +45,12 @@ RUN dnf install -y clevis-dracut clevis-luks clevis-systemd \
     && kver=$(cd /usr/lib/modules && echo *) \
     && dracut -vf /usr/lib/modules/$kver/initramfs.img $kver
 
+# Fix logging in with userdbd users. The sed is written with an extra
+# capture because I couldn't get \& into the s///.
+RUN sed -E -i -e 's/^((shadow|gshadow):\s+files)$/\1 systemd/' \
+    /usr/share/authselect/*/*/nsswitch.conf \
+    /etc/authselect/nsswitch.conf
+
 # Clean up
 RUN dnf clean all
 RUN echo Brute-force cleaning /var \
