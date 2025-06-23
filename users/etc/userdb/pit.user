@@ -1,0 +1,8 @@
+{
+	"userName" : "pit",
+	"uid": 1001,
+	"gid": 1001,
+	"memberOf": [ "wheel" ],
+	"homeDirectory" : "/home/pit",
+	"shell" : "/bin/bash"
+}
