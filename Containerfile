@@ -6,10 +6,9 @@ FROM quay.io/almalinuxorg/almalinux-bootc:10.0 AS base
 
 # Install common packages
 RUN <<EORUN
+dnf install -y dnf-plugins-core epel-release
 dnf config-manager --set-enabled crb
-dnf install -y epel-release
 dnf install -y distrobox
-dnf clean all
 EORUN
 
 # Install Linode DNS updater
