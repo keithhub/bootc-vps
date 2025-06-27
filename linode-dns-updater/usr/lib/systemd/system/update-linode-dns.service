@@ -1,15 +1,13 @@
 [Unit]
 Description=Update Linode DNS records with current IP
-ConditionPathExists=/etc/credstore.encrypted/linode-dns-updater.token
+ConditionCredential=linode-dns-updater.domain_id
 
 [Service]
 Type=oneshot
 ExecStart=/usr/libexec/update-linode-dns.sh
 DynamicUser=yes
-LoadCredentialEncrypted=linode-dns-updater.token:linode-dns-updater.token
-LoadCredential=linode-dns-updater.domain_id:linode-dns-updater.domain_id
-LoadCredential=linode-dns-updater.a_record_id:linode-dns-updater.a_record_id
-LoadCredential=linode-dns-updater.aaaa_record_id:linode-dns-updater.aaaa_record_id
+ImportCredential=linode-dns-updater.*
+
 NoNewPrivileges=true
 CapabilityBoundingSet=
 SystemCallFilter=@system-service

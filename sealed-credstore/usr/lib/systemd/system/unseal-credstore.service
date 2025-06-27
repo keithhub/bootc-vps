@@ -1,0 +1,25 @@
+[Unit]
+Description=Unseal credstore secrets
+DefaultDependencies=no
+After=local-fs.target
+After=systemd-tmpfiles-setup.service
+Before=sysinit.target
+ConditionPathExists=/usr/lib/credstore.sealed
+ConditionPathExists=/etc/ssh/ssh_host_ed25519_key
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/unseal-credstore
+RemainAfterExit=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/run/credstore.encrypted
+ReadOnlyPaths=/usr/lib/credstore.sealed /etc/ssh
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+[Install]
+WantedBy=sysinit.target

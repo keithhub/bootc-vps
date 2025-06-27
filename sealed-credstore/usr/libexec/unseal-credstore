@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -euo pipefail
+
+readonly SEALED_DIR="/usr/lib/credstore.sealed"
+readonly ENCRYPTED_DIR="/run/credstore.encrypted"
+readonly SSH_KEY="/etc/ssh/ssh_host_ed25519_key"
+
+log() { printf '[%s] %s\n' "$(date -Iseconds)" "$*" >&2; }
+die() { log "ERROR: $*"; exit 1; }
+
+main() {
+    [[ -d "$SEALED_DIR" ]] || die "Sealed credstore not found: $SEALED_DIR"
+    [[ -r "$SSH_KEY" ]] || die "SSH host key not readable: $SSH_KEY"
+
+    command -v rage >/dev/null || die "rage not installed"
+    command -v systemd-creds >/dev/null || die "systemd-creds not available"
+
+    mkdir -p "$ENCRYPTED_DIR"
+
+    local count=0
+    while IFS= read -r -d '' sealed_file; do
+        local basename="${sealed_file##*/}"
+        local cred_name="${basename%.age}"
+        local encrypted_file="$ENCRYPTED_DIR/$cred_name"
+
+        [[ "$basename" == *.age ]] || continue
+        [[ -n "$cred_name" ]] || continue
+
+        log "Unsealing: $cred_name"
+
+        if ! rage -d -i "$SSH_KEY" "$sealed_file" |
+             systemd-creds encrypt --name="$cred_name" - "$encrypted_file"; then
+            die "Failed to unseal: $cred_name"
+        fi
+
+        ((++count))
+    done < <(find "$SEALED_DIR" -name '*.age' -type f -print0)
+
+    log "Successfully unsealed $count credentials"
+}
+
+main "$@"
