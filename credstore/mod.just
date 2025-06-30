@@ -53,11 +53,11 @@ lookup-records:
     cd targets
     ls
     | each {|tgt|
-      http get -H {Authorization: $"Bearer ($env.LINODE_API_TOKEN)"} $"https://api.linode.com/v4/domains/($env.LINODE_DOMAIN_ID)/records"
-      | get data
-      | where $it.name == $tgt.name and ($it.type == "A" or $it.type == "AAAA")
-    }
+        http get -H {Authorization: $"Bearer ($env.LINODE_API_TOKEN)"} $"https://api.linode.com/v4/domains/($env.LINODE_DOMAIN_ID)/records"
+        | get data
+        | where $it.name == $tgt.name and ($it.type == "A" or $it.type == "AAAA")
+      }
     | flatten
-    | upsert file {|r| $"($r.name)/linode-dns-updater.($r.type | str downcase)_record_id"}
+    | upsert file {|r| $"($r.name)/linode-dns-updater.($r.type | str downcase)_record_id" }
     | where not ($it.file | path exists)
-    | each {|r| $r.id | save $r.file; $r}
+    | each {|r| $r.id | save $r.file; $r }
