@@ -24,7 +24,7 @@ COPY linode-dns-updater/usr /usr
 RUN ln -sr /usr/lib/systemd/system/update-linode-dns.timer /usr/lib/systemd/system/timers.target.wants/
 
 # Set default target
-RUN ln -sfr /usr/lib/systemd/system/multi-user.target /usr/lib/systemd/system/default.target
+RUN systemctl set-default multi-user.target
 
 # Allow auto-updates
 RUN ln -sr /usr/lib/systemd/system/bootc-fetch-apply-updates.timer /usr/lib/systemd/system/timers.target.wants/
