@@ -77,12 +77,23 @@ RUN bootc container lint
 
 
 #
+# beech
+#
+
+FROM headless AS beech
+
+COPY sealed-credstore/targets/beech/. /usr/lib/credstore.sealed/
+
+RUN bootc container lint
+
+
+#
 # cherry
 #
 
 FROM headless AS cherry
 
-COPY sealed-credstore/targets/cherry/. usr/lib/credstore.sealed/
+COPY sealed-credstore/targets/cherry/. /usr/lib/credstore.sealed/
 
 RUN bootc container lint
 
