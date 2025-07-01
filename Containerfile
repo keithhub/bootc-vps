@@ -115,6 +115,7 @@ RUN bootc container lint
 
 FROM headless AS elm
 
-COPY sealed-credstore/targets/elm/. usr/lib/credstore.sealed/
+COPY --chmod=600 network/elm-ens8.nmconnection /etc/NetworkManager/system-connections/
+COPY sealed-credstore/targets/elm/. /usr/lib/credstore.sealed/
 
 RUN bootc container lint
