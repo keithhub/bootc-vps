@@ -27,9 +27,18 @@ jobs:
     steps:
       - name: Generate Matrix Configuration
         id: prep
+        env:
+          HOST_CONFIG: |
+            {
+              "beech": {"platform": "linux/amd64/v2"},
+              "cherry": {},
+              "cyprus": {},
+              "dogwood": {},
+              "elm": {}
+            }
         run: |
-          # Single source of truth for the host list
-          hosts='["beech", "cherry", "cyprus", "dogwood", "elm"]'
+          # Extract hosts list for other jobs that need it
+          hosts=$(echo "$HOST_CONFIG" | jq -c 'keys')
           echo "hosts=${hosts}" >> $GITHUB_OUTPUT
 
           # Generate the full matrix for other jobs to consume
@@ -37,15 +46,16 @@ jobs:
           REPO_NAME_LOWER=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
 
           # Use jq to construct the JSON for the matrix strategy
-          matrix=$(jq -n --argjson hosts "$hosts" \
+          matrix=$(jq -n --argjson config "$HOST_CONFIG" \
                           --arg owner "$IMAGE_OWNER_LOWER" \
                           --arg repo "$REPO_NAME_LOWER" \
                           --arg sha "${{ github.sha }}" \
                           '{"include": [
-                             $hosts[] | {
-                               host: .,
-                               image_name: "ghcr.io/\($owner)/\($repo)-\(.)",
-                               tags: "ghcr.io/\($owner)/\($repo)-\(.):latest,ghcr.io/\($owner)/\($repo)-\(.):\($sha)"
+                             $config | to_entries[] | {
+                               host: .key,
+                               image_name: "ghcr.io/\($owner)/\($repo)-\(.key)",
+                               tags: "ghcr.io/\($owner)/\($repo)-\(.key):latest,ghcr.io/\($owner)/\($repo)-\(.key):\($sha)",
+                               platform: (.value.platform // "linux/amd64"),
                              }
                            ]}')
 
@@ -70,6 +80,7 @@ jobs:
           context: .
           file: ./Containerfile
           target: base
+          platforms: linux/amd64, linux/amd64/v2
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -79,6 +90,7 @@ jobs:
           context: .
           file: ./Containerfile
           target: headless
+          platforms: linux/amd64, linux/amd64/v2
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -108,6 +120,7 @@ jobs:
           context: .
           file: ./Containerfile
           target: ${{ matrix.host }}
+          platforms: ${{ matrix.platform }}
           push: true
           tags: ${{ matrix.tags }}
           cache-from: type=gha
