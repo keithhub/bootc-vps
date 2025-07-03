@@ -82,6 +82,7 @@ RUN bootc container lint
 
 FROM headless AS beech
 
+COPY --chmod=600 network/beech-*.nmconnection /etc/NetworkManager/system-connections/
 COPY sealed-credstore/targets/beech/. /usr/lib/credstore.sealed/
 
 RUN bootc container lint
@@ -126,7 +127,7 @@ RUN bootc container lint
 
 FROM headless AS elm
 
-COPY --chmod=600 network/elm-ens8.nmconnection /etc/NetworkManager/system-connections/
+COPY --chmod=600 network/elm-*.nmconnection /etc/NetworkManager/system-connections/
 COPY sealed-credstore/targets/elm/. /usr/lib/credstore.sealed/
 
 RUN bootc container lint
