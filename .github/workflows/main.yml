@@ -121,6 +121,7 @@ jobs:
           file: ./Containerfile
           target: ${{ matrix.host }}
           platforms: ${{ matrix.platform }}
+          provenance: false
           push: true
           tags: ${{ matrix.tags }}
           cache-from: type=gha
