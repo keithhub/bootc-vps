@@ -4,7 +4,7 @@ Description=Update Linode DNS records with current IP
 [Service]
 Type=oneshot
 ImportCredential=linode-dns-updater.*
-ExecStart=/usr/libexec/update-linode-dns.sh
+ExecStart=/usr/libexec/update-linode-dns
 DynamicUser=yes
 NoNewPrivileges=true
 CapabilityBoundingSet=
