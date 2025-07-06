@@ -62,7 +62,7 @@ RUN dnf install -y clevis-dracut clevis-luks clevis-systemd \
 # Fix rd.neednet=1 blocking custom NetworkManager connections
 # https://github.com/dracutdevs/dracut/issues/1062
 
-COPY <<EOF /etc/NetworkManager/conf.d/00-system.conf
+COPY <<EOF /etc/NetworkManager/conf.d/00-ignore-initrd-connections.conf
 [device]
 keep-configuration=no
 allowed-connections=except:origin:nm-initrd-generator
@@ -138,6 +138,8 @@ RUN bootc container lint
 #
 
 FROM headless AS cherry
+
+COPY --chmod=600 network/cherry-*.nmconnection /etc/NetworkManager/system-connections/
 
 COPY sealed-credstore/targets/cherry/. /usr/lib/credstore.sealed/
 
