@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -euxo pipefail
+
+HOST="$1"
+
+sed -i \
+    -e 's/^#?ServerAdmin .*$/ServerAdmin wc-webmaster@wthrd.com/' \
+    -e 's/^#?ServerName .*$/ServerName '"${HOST}"':80/' \
+    /etc/httpd/conf/httpd.conf
+
+mkdir -p /etc/httpd/vhosts.d
+echo "Use BasicMDomain ${HOST}" >/etc/httpd/vhosts.d/"${HOST}".conf

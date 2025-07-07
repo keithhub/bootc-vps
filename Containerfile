@@ -73,6 +73,7 @@ COPY users/etc /etc
 RUN dnf install -y httpd mod_md \
     && systemctl enable httpd.service
 RUN setsebool -P httpd_can_network_connect=on
+COPY httpd/usr /usr
 COPY httpd/etc /etc
 
 # Clean up
@@ -92,7 +93,10 @@ RUN bootc container lint
 FROM headless AS beech
 
 COPY --chmod=600 network/beech-*.nmconnection /etc/NetworkManager/system-connections/
+
 COPY sealed-credstore/targets/beech/. /usr/lib/credstore.sealed/
+
+RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host beech.wthrd.com
 
 RUN bootc container lint
 
@@ -107,10 +111,7 @@ COPY --chmod=600 network/cherry-*.nmconnection /etc/NetworkManager/system-connec
 
 COPY sealed-credstore/targets/cherry/. /usr/lib/credstore.sealed/
 
-RUN sed -i \
-    -e 's/^ServerAdmin root@localhost/ServerAdmin root@wthrd.com/' \
-    -e 's/^#ServerName www.example.com:80/ServerName cherry.wthrd.com:80/' \
-    /etc/httpd/conf/httpd.conf
+RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host cherry.wthrd.com
 
 RUN bootc container lint
 
@@ -121,7 +122,9 @@ RUN bootc container lint
 
 FROM headless AS cyprus
 
-COPY sealed-credstore/targets/cyprus/. usr/lib/credstore.sealed/
+COPY sealed-credstore/targets/cyprus/. /usr/lib/credstore.sealed/
+
+RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host cyprus.wthrd.com
 
 RUN bootc container lint
 
@@ -132,7 +135,9 @@ RUN bootc container lint
 
 FROM headless AS dogwood
 
-COPY sealed-credstore/targets/dogwood/. usr/lib/credstore.sealed/
+COPY sealed-credstore/targets/dogwood/. /usr/lib/credstore.sealed/
+
+RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host dogwood.wthrd.com
 
 RUN bootc container lint
 
@@ -144,6 +149,9 @@ RUN bootc container lint
 FROM headless AS elm
 
 COPY --chmod=600 network/elm-*.nmconnection /etc/NetworkManager/system-connections/
+
 COPY sealed-credstore/targets/elm/. /usr/lib/credstore.sealed/
+
+RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host elm.wthrd.com
 
 RUN bootc container lint
