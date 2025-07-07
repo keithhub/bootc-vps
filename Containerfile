@@ -71,10 +71,12 @@ COPY users/etc /etc
 # Install Apache with mod_md (for Let's Encrypt)
 
 RUN dnf install -y httpd mod_md \
-    && systemctl enable httpd.service
-RUN setsebool -P httpd_can_network_connect=on
-COPY httpd/usr /usr
-COPY httpd/etc /etc
+    && systemctl enable httpd.service \
+    && setsebool -P httpd_can_network_connect on \
+    && mv /var/www /usr/share/www \
+    && sed -i -e 's,/var/www,/usr/share/www,' /etc/httpd/conf/httpd.conf
+COPY httpd/usr/ /usr/
+COPY httpd/etc/ /etc/
 
 # Clean up
 

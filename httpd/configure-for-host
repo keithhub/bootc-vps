@@ -4,7 +4,7 @@ set -euxo pipefail
 
 HOST="$1"
 
-sed -i \
+sed -E -i \
     -e 's/^#?ServerAdmin .*$/ServerAdmin wc-webmaster@wthrd.com/' \
     -e 's/^#?ServerName .*$/ServerName '"${HOST}"':80/' \
     /etc/httpd/conf/httpd.conf
