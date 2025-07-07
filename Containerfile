@@ -72,36 +72,8 @@ COPY users/etc /etc
 
 RUN dnf install -y httpd mod_md \
     && systemctl enable httpd.service
-
-COPY <<EOF /usr/lib/tmpfiles.d/httpd-var.conf
-  d /var/cache/httpd 0700 apache apache - -
-  d /var/cache/httpd/proxy 0700 apache apache - -
-  d /var/cache/httpd/ssl 0700 apache apache - -
-  d /var/lib/httpd 0700 apache apache - -
-  d /var/lib/httpd/md 0755 root root - -
-  d /var/log/httpd 0700 root root - -
-  d /var/www 0755 root root - -
-  d /var/www/cgi-bin 0755 root root - -
-  d /var/www/html 0755 root root - -
-EOF
-
 RUN setsebool -P httpd_can_network_connect=on
-
-COPY <<EOF /etc/httpd/conf.d/acme.conf
-MDBaseServer on
-MDCertificateAgreement accepted
-MDContactEmail wc-acme@wthrd.com
-MDMatchNames servernames
-MDPrivateKeys secp256r1 rsa3072
-MDRequireHttps temporary
-# TODO: MDRequireHttps permanent
-MDStapling on
-
-<Location "/md-status">
-  SetHandler md-status
-  Require ip 127.0.0.1
-</Location>
-EOF
+COPY httpd/etc /etc
 
 # Clean up
 
