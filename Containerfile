@@ -58,15 +58,7 @@ RUN dnf install -y clevis-dracut clevis-luks clevis-systemd \
     && echo 'kargs = ["rd.neednet=1"]' >> /usr/lib/bootc/kargs.d/99-clevis-pin-tang.toml \
     && kver=$(cd /usr/lib/modules && echo *) \
     && dracut -vf /usr/lib/modules/$kver/initramfs.img $kver
-
-# Fix rd.neednet=1 blocking custom NetworkManager connections
-# https://github.com/dracutdevs/dracut/issues/1062
-
-COPY <<EOF /etc/NetworkManager/conf.d/00-ignore-initrd-connections.conf
-[device]
-keep-configuration=no
-allowed-connections=except:origin:nm-initrd-generator
-EOF
+COPY clevis/etc /etc
 
 # Fix logging in with userdbd users. The sed is written with an extra
 # capture because I couldn't get \& into the s///.
