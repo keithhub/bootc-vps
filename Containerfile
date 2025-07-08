@@ -124,6 +124,8 @@ RUN bootc container lint
 
 FROM headless AS cyprus
 
+COPY --chmod=600 network/cyprus-*.nmconnection /etc/NetworkManager/system-connections/
+
 COPY sealed-credstore/targets/cyprus/. /usr/lib/credstore.sealed/
 
 RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host cyprus.wthrd.com
@@ -136,6 +138,8 @@ RUN bootc container lint
 #
 
 FROM headless AS dogwood
+
+COPY --chmod=600 network/dogwood-*.nmconnection /etc/NetworkManager/system-connections/
 
 COPY sealed-credstore/targets/dogwood/. /usr/lib/credstore.sealed/
 
