@@ -24,7 +24,7 @@ COPY sealed-credstore/usr /usr
 # Install Linode DNS updater
 
 COPY linode-dns-updater/usr /usr
-RUN ln -sr /usr/lib/systemd/system/update-linode-dns.timer /usr/lib/systemd/system/timers.target.wants/
+RUN systemctl enable update-linode-dns.timer
 
 # Set default target
 
@@ -32,8 +32,8 @@ RUN systemctl set-default multi-user.target
 
 # Allow auto-updates
 
-RUN ln -sr /usr/lib/systemd/system/bootc-fetch-apply-updates.timer /usr/lib/systemd/system/timers.target.wants/
-RUN ln -sr /usr/lib/systemd/system/podman-auto-update.timer /usr/lib/systemd/system/timers.target.wants/
+RUN systemctl enable bootc-fetch-apply-updates.timer
+RUN systemctl enable podman-auto-update.timer
 
 # Clean up
 
