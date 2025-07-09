@@ -12,6 +12,14 @@ dnf config-manager --set-enabled crb
 dnf install -y distrobox
 EORUN
 
+# Fix logging in with userdb users. The sed is written with an extra
+# capture because I couldn't get \& into the s///.
+
+RUN sed -E -i -e 's/^((shadow|gshadow):\s+files)$/\1 systemd/' \
+    /usr/share/authselect/*/*/nsswitch.conf \
+    /etc/authselect/nsswitch.conf
+COPY userdb/etc /etc
+
 # Install sealed credstore (which requires age)
 
 ADD --checksum=sha256:b737607e430c0c92c3a566b82c7d7a3a051a10f5c0d8e5a82848c4572e31a8e9 \
@@ -60,13 +68,9 @@ RUN dnf install -y clevis-dracut clevis-luks clevis-systemd \
     && dracut -vf /usr/lib/modules/$kver/initramfs.img $kver
 COPY clevis/etc /etc
 
-# Fix logging in with userdbd users. The sed is written with an extra
-# capture because I couldn't get \& into the s///.
+# Define common users
 
-RUN sed -E -i -e 's/^((shadow|gshadow):\s+files)$/\1 systemd/' \
-    /usr/share/authselect/*/*/nsswitch.conf \
-    /etc/authselect/nsswitch.conf
-COPY users/etc /etc
+COPY headless-users/etc /etc
 
 # Install Apache with mod_md (for Let's Encrypt)
 
