@@ -74,15 +74,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Container Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Containerfile
-          target: base
-          platforms: linux/amd64, linux/amd64/v2
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      # - name: Build Container Image
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: ./Containerfile
+      #     target: base
+      #     platforms: linux/amd64, linux/amd64/v2
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
 
       - name: Build Container Image
         uses: docker/build-push-action@v5
