@@ -45,12 +45,11 @@ RUN systemctl enable podman-auto-update.timer
 
 # Clean up
 
-RUN dnf clean all
-RUN echo Brute-force cleaning /var \
-    && find /var/{lib,cache,log} -type f -ls \
-    && rm -rf /var/{lib,cache,log}
-
-RUN bootc container lint
+RUN dnf clean all \
+    && rm -rf /var/{cache,lib}/dnf \
+    && rm -rf /var/cache/ldconfig \
+    && rm -rf /var/log/*
+RUN bootc container lint --fatal-warnings
 
 
 #
@@ -75,8 +74,11 @@ COPY httpd/etc/ /etc/
 
 # Clean up
 
-RUN dnf clean all
-RUN bootc container lint
+RUN dnf clean all \
+    && rm -rf /var/{cache,lib}/dnf \
+    && rm -rf /var/cache/ldconfig \
+    && rm -rf /var/log/*
+RUN bootc container lint --fatal-warnings
 
 
 FROM headless-no-clevis AS headless
@@ -92,8 +94,11 @@ COPY clevis/etc /etc
 
 # Clean up
 
-RUN dnf clean all
-RUN bootc container lint
+RUN dnf clean all \
+    && rm -rf /var/{cache,lib}/dnf \
+    && rm -rf /var/cache/ldconfig \
+    && rm -rf /var/log/*
+RUN bootc container lint --fatal-warnings
 
 
 #
@@ -108,7 +113,7 @@ COPY sealed-credstore/targets/beech/. /usr/lib/credstore.sealed/
 
 RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host beech.wthrd.com
 
-RUN bootc container lint
+RUN bootc container lint --fatal-warnings
 
 
 #
@@ -123,7 +128,7 @@ COPY sealed-credstore/targets/cherry/. /usr/lib/credstore.sealed/
 
 RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host cherry.wthrd.com
 
-RUN bootc container lint
+RUN bootc container lint --fatal-warnings
 
 
 #
@@ -138,7 +143,7 @@ COPY sealed-credstore/targets/cyprus/. /usr/lib/credstore.sealed/
 
 RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host cyprus.wthrd.com
 
-RUN bootc container lint
+RUN bootc container lint --fatal-warnings
 
 
 #
@@ -153,7 +158,7 @@ COPY sealed-credstore/targets/dogwood/. /usr/lib/credstore.sealed/
 
 RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host dogwood.wthrd.com
 
-RUN bootc container lint
+RUN bootc container lint --fatal-warnings
 
 
 #
@@ -168,4 +173,4 @@ COPY sealed-credstore/targets/elm/. /usr/lib/credstore.sealed/
 
 RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host elm.wthrd.com
 
-RUN bootc container lint
+RUN bootc container lint --fatal-warnings
