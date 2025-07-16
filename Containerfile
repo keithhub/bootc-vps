@@ -156,7 +156,35 @@ COPY --chmod=600 network/dogwood-*.nmconnection /etc/NetworkManager/system-conne
 
 COPY sealed-credstore/targets/dogwood/. /usr/lib/credstore.sealed/
 
-RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host dogwood.wthrd.com
+
+# RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host dogwood.wthrd.com
+RUN systemctl disable httpd.service
+
+# Install NGINX
+
+RUN dnf install -y nginx nginx-mod-stream \
+    && systemctl enable nginx.service
+RUN mkdir -p -m 555 /usr/share/nginx/empty
+COPY nginx/usr /usr
+COPY nginx/etc /etc
+
+# Dehydrated
+RUN dnf install -y dehydrated \
+    && systemctl enable dehydrated.timer
+RUN mkdir -p -m 755 /var/lib/dehydrated \
+    && mv /etc/dehydrated/{accounts,archive,certs} /var/lib/dehydrated
+COPY dehydrated/usr /usr
+COPY dehydrated/etc /etc
+
+RUN echo "dogwood.wthrd.com > _" > /etc/dehydrated/domains.txt
+
+# Clean up
+
+RUN dnf clean all \
+    && rm -rf /var/{cache,lib}/dnf \
+    && rm -rf /var/cache/ldconfig \
+    && rm -rf /var/log/*
+
 
 RUN bootc container lint --fatal-warnings
 
