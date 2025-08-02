@@ -9,7 +9,12 @@ FROM quay.io/almalinuxorg/almalinux-bootc:10.0 AS base
 RUN <<EORUN
 dnf install -y dnf-plugins-core epel-release
 dnf config-manager --set-enabled crb
-dnf install -y distrobox
+dnf install -y \
+    distrobox \
+    tmux \
+    rsync \
+    vdo \
+    ;
 EORUN
 
 # Fix logging in with userdb users. The sed is written with an extra
