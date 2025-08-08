@@ -11,9 +11,11 @@ dnf install -y dnf-plugins-core epel-release
 dnf config-manager --set-enabled crb
 dnf install -y \
     distrobox \
+    firewalld \
     tmux \
     rsync \
     vdo \
+    wireguard-tools \
     ;
 EORUN
 
@@ -62,6 +64,16 @@ RUN bootc container lint --fatal-warnings
 #
 
 FROM base AS headless-no-clevis
+
+# Set up firewall and server-style networking
+
+RUN dnf install -y NetworkManager-config-server
+
+#RUN <<EOF
+#set -euo pipefail
+#firewall-offline-cmd --zone=external --add-service=dhcpv6-client
+#EOF
+RUN find /etc/firewalld -name '*.old' -delete
 
 # Define common users
 
