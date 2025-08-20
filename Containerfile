@@ -201,7 +201,7 @@ FROM headless AS tan
 
 # COPY --chmod=600 network/elm-*.nmconnection /etc/NetworkManager/system-connections/
 
-# COPY sealed-credstore/targets/elm/. /usr/lib/credstore.sealed/
+COPY sealed-credstore/targets/tan/. /usr/lib/credstore.sealed/
 
 RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host tan.wthrd.com
 
