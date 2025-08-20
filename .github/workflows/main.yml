@@ -34,7 +34,8 @@ jobs:
               "cherry": {},
               "cyprus": {},
               "dogwood": {},
-              "elm": {}
+              "elm": {},
+              "tan": {}
             }
         run: |
           # Extract hosts list for other jobs that need it
