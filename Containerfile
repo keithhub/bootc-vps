@@ -65,15 +65,9 @@ RUN bootc container lint --fatal-warnings
 
 FROM base AS headless-no-clevis
 
-# Set up firewall and server-style networking
+# Set up server-style networking
 
 RUN dnf install -y NetworkManager-config-server
-
-#RUN <<EOF
-#set -euo pipefail
-#firewall-offline-cmd --zone=external --add-service=dhcpv6-client
-#EOF
-RUN find /etc/firewalld -name '*.old' -delete
 
 # Define common users
 
@@ -88,9 +82,11 @@ RUN dnf install -y httpd mod_md \
     && sed -i -e 's,/var/www,/usr/share/www,' /etc/httpd/conf/httpd.conf
 COPY httpd/usr/ /usr/
 COPY httpd/etc/ /etc/
+RUN firewall-offline-cmd --add-service http --add-service https
 
 # Clean up
 
+RUN find /etc/firewalld -name '*.old' -delete
 RUN dnf clean all \
     && rm -rf /var/{cache,lib}/dnf \
     && rm -rf /var/cache/ldconfig \

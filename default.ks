@@ -21,14 +21,14 @@ clearpart --all --initlabel
 
 # Disk partitioning
 part biosboot --fstype=biosboot --size=1
-part /boot --fstype=xfs --size=1024
-part pv.180 --fstype=lvmpv --size=1 --grow --encrypted --luks-version=luks2
+part /boot --fstype=xfs --size=1536
+part pv.1 --fstype=lvmpv --size=1 --grow --encrypted --luks-version=luks2
 
-volgroup beth pv.180
-logvol swap --fstype=swap --size=8192 --name=swap --vgname=beth
-logvol none --size=1 --grow --thinpool --name=pool00 --vgname=beth
-logvol / --fstype=xfs --size=51200 --thin --poolname=pool00 --name=root --vgname=beth
-logvol /home --fstype=xfs --size=10240 --thin --poolname=pool00 --name=home --vgname=beth
+volgroup main pv.1
+logvol swap --fstype=swap --size=8192 --name=swap --vgname=main
+logvol none --size=1 --grow --thinpool --name=pool00 --vgname=main
+logvol / --fstype=xfs --size=51200 --thin --poolname=pool00 --name=root --vgname=main
+logvol /home --fstype=xfs --size=10240 --thin --poolname=pool00 --name=home --vgname=main
 
 # Root
 rootpw --lock
