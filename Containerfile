@@ -52,6 +52,9 @@ RUN systemctl enable podman-auto-update.timer
 
 # Clean up
 
+# TODO: Is this OK?
+RUN rm -r /var/lib/selinux/targeted/active
+
 RUN dnf clean all \
     && rm -rf /var/{cache,lib}/dnf \
     && rm -rf /var/cache/ldconfig \
