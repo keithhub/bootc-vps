@@ -61,14 +61,14 @@ RUN systemctl enable podman-auto-update.timer
 
 # Clean up
 
-# TODO: Is this OK?
-RUN rm -r /var/lib/selinux/targeted/active
+RUN mv /var/lib/selinux/targeted/active/modules/* /etc/selinux/targeted/modules/ \
+    && find /var/lib/selinux -empty -delete
 
 RUN dnf clean all \
     && rm -rf /var/{cache,lib}/dnf \
     && rm -rf /var/cache/ldconfig \
     && rm -rf /var/log/*
-RUN bootc container lint --fatal-warnings
+RUN bootc container lint --fatal-warnings --no-truncate
 
 
 #
