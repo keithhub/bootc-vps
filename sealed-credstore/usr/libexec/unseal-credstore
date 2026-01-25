@@ -13,7 +13,7 @@ main() {
     [[ -d "$SEALED_DIR" ]] || die "Sealed credstore not found: $SEALED_DIR"
     [[ -r "$SSH_KEY" ]] || die "SSH host key not readable: $SSH_KEY"
 
-    command -v rage >/dev/null || die "rage not installed"
+    command -v age >/dev/null || die "age not installed"
     command -v systemd-creds >/dev/null || die "systemd-creds not available"
 
     mkdir -p "$ENCRYPTED_DIR"
@@ -29,7 +29,7 @@ main() {
 
         log "Unsealing: $cred_name"
 
-        if ! rage -d -i "$SSH_KEY" "$sealed_file" |
+        if ! age -d -i "$SSH_KEY" "$sealed_file" |
              systemd-creds encrypt --name="$cred_name" - "$encrypted_file"; then
             die "Failed to unseal: $cred_name"
         fi

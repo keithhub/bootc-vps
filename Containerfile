@@ -20,6 +20,7 @@ EORUN
 # Install common packages
 
 RUN dnf install -y \
+    age \
     distrobox \
     firewalld \
     tmux \
@@ -38,11 +39,6 @@ COPY userdb/etc /etc
 
 # Install sealed credstore (which requires age)
 
-ADD --checksum=sha256:b737607e430c0c92c3a566b82c7d7a3a051a10f5c0d8e5a82848c4572e31a8e9 \
-    https://github.com/str4d/rage/releases/download/v0.11.1/rage-v0.11.1-x86_64-linux.tar.gz \
-    /tmp
-RUN tar -x -f /tmp/rage-*-x86_64-linux.tar.gz -C /usr/bin --strip-components=1 \
-    && rm /tmp/rage-*-x86_64-linux.tar.gz
 COPY sealed-credstore/usr /usr
 
 # Install Linode DNS updater
