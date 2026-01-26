@@ -2,7 +2,7 @@
 Description=Kandim
 
 [Container]
-Image=docker.io/kanidm/server:1.7.2
+Image=docker.io/kanidm/server:1.8.5
 Volume=/var/lib/kanidm:/data:Z
 PublishPort=8443:8443
 User=801
