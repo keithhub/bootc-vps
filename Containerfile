@@ -192,7 +192,10 @@ COPY --chmod=600 network/elm-*.nmconnection /etc/NetworkManager/system-connectio
 
 COPY sealed-credstore/targets/elm/. /usr/lib/credstore.sealed/
 
-RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host elm.wthrd.com
+RUN --mount=source=/httpd,target=/httpd,ro,relabel=private /httpd/configure-for-host elm.wthrd.com
+
+COPY kanidm/etc/ /etc/
+COPY kanidm/usr/ /usr/
 
 RUN bootc container lint --fatal-warnings
 

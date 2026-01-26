@@ -1,0 +1,18 @@
+[Unit]
+Description=Kandim
+
+[Container]
+Image=docker.io/kanidm/server:1.7.2
+Volume=/var/lib/kanidm:/data:Z
+PublishPort=8443:8443
+User=801
+Group=801
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+ExecStartPre=/usr/bin/install -m 440 -o root -g kanidm /var/lib/httpd/md/domains/wthrd-auth.link/pubcert.pem /var/lib/kanidm/
+ExecStartPre=/usr/bin/install -m 440 -o root -g kanidm /var/lib/httpd/md/domains/wthrd-auth.link/privkey.pem /var/lib/kanidm/
+
+[Install]
+WantedBy=multi-user.target
