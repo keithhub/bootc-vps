@@ -123,46 +123,16 @@ RUN bootc container lint --fatal-warnings
 
 
 #
-# beech
+# aspen
 #
 
-FROM headless AS beech
+FROM headless AS aspen
 
-COPY --chmod=600 network/beech-*.nmconnection /etc/NetworkManager/system-connections/
+COPY --chmod=600 network/aspen-*.nmconnection /etc/NetworkManager/system-connections/
 
-COPY sealed-credstore/targets/beech/. /usr/lib/credstore.sealed/
+COPY sealed-credstore/targets/aspen/. /usr/lib/credstore.sealed/
 
-RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host beech.wthrd.com
-
-RUN bootc container lint --fatal-warnings
-
-
-#
-# cherry
-#
-
-FROM headless AS cherry
-
-COPY --chmod=600 network/cherry-*.nmconnection /etc/NetworkManager/system-connections/
-
-COPY sealed-credstore/targets/cherry/. /usr/lib/credstore.sealed/
-
-RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host cherry.wthrd.com
-
-RUN bootc container lint --fatal-warnings
-
-
-#
-# cyprus
-#
-
-FROM headless AS cyprus
-
-COPY --chmod=600 network/cyprus-*.nmconnection /etc/NetworkManager/system-connections/
-
-COPY sealed-credstore/targets/cyprus/. /usr/lib/credstore.sealed/
-
-RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host cyprus.wthrd.com
+RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host aspen.wthrd.com
 
 RUN bootc container lint --fatal-warnings
 

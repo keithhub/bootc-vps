@@ -30,9 +30,6 @@ jobs:
         env:
           HOST_CONFIG: |
             {
-              "beech": {"platform": "linux/amd64/v2"},
-              "cherry": {},
-              "cyprus": {},
               "dogwood": {},
               "elm": {},
               "tan": {}
