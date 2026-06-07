@@ -84,6 +84,7 @@ COPY headless-users/etc /etc
 # Install Apache with mod_md (for Let's Encrypt)
 
 RUN dnf install -y httpd mod_md \
+    && rm -r /run/httpd \
     && systemctl enable httpd.service \
     && setsebool -P httpd_can_network_connect on \
     && mv /var/www /usr/share/www \
