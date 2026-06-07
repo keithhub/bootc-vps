@@ -2,7 +2,7 @@
 # Base
 #
 
-FROM quay.io/almalinuxorg/almalinux-bootc:10.1 AS base
+FROM quay.io/almalinuxorg/almalinux-bootc:10.2 AS base
 
 # Lifted from AlmaLinux atomic-desktop
 
