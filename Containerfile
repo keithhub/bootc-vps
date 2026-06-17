@@ -172,6 +172,21 @@ RUN bootc container lint --fatal-warnings
 
 
 #
+# plum
+#
+
+FROM headless AS plum
+
+COPY --chmod=600 network/plum-*.nmconnection /etc/NetworkManager/system-connections/
+
+COPY sealed-credstore/targets/plum/. /usr/lib/credstore.sealed/
+
+RUN --mount=source=/httpd,target=/httpd /httpd/configure-for-host plum.wthrd.com
+
+RUN bootc container lint --fatal-warnings
+
+
+#
 # tan
 #
 
