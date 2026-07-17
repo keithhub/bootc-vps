@@ -34,7 +34,7 @@ logvol /home --fstype=xfs --size=10240 --thin --poolname=pool00 --name=home --vg
 rootpw --lock
 
 # User
-user --name keith --groups=wheel --iscrypted --password="$6$SqQklh3y2BEql6ZV$al0zgxuRU3RTJoLFqrHBkCLKN7vnoKEM.sQ2gs4Del1IFY8s2A0ZvlMmOZvP8NH0Stjx.MTEodHkMalLflYU1."
+user --name keith --groups=wheel --password=dummy
 sshkey --username keith "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHXUzN2aSID7Zd5lARAw+mC4eORXOWjueVkhTNjd9R/J khubbard@kh8"
 
 # Reboot

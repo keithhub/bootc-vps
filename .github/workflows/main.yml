@@ -1,4 +1,4 @@
-name: Build OS Image & Publish Kickstart
+name: Build OS Images
 
 on:
   push:
@@ -14,15 +14,12 @@ on:
 permissions:
   contents: read    # To checkout the repository
   packages: write   # To push container images to GHCR
-  pages: write      # To deploy to GitHub Pages
-  id-token: write   # Required for OIDC with GitHub Pages deployment
 
 jobs:
   prepare-build:
     name: Prepare Build
     runs-on: ubuntu-latest
     outputs:
-      hosts: ${{ steps.prep.outputs.hosts }}
       matrix: ${{ steps.prep.outputs.matrix }}
     steps:
       - name: Generate Matrix Configuration
@@ -36,15 +33,9 @@ jobs:
               "tan": {}
             }
         run: |
-          # Extract hosts list for other jobs that need it
-          hosts=$(echo "$HOST_CONFIG" | jq -c 'keys')
-          echo "hosts=${hosts}" >> $GITHUB_OUTPUT
-
-          # Generate the full matrix for other jobs to consume
           IMAGE_OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           REPO_NAME_LOWER=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
 
-          # Use jq to construct the JSON for the matrix strategy
           matrix=$(jq -n --argjson config "$HOST_CONFIG" \
                           --arg owner "$IMAGE_OWNER_LOWER" \
                           --arg repo "$REPO_NAME_LOWER" \
@@ -52,13 +43,11 @@ jobs:
                           '{"include": [
                              $config | to_entries[] | {
                                host: .key,
-                               image_name: "ghcr.io/\($owner)/\($repo)-\(.key)",
                                tags: "ghcr.io/\($owner)/\($repo)-\(.key):latest,ghcr.io/\($owner)/\($repo)-\(.key):\($sha)",
                                platform: (.value.platform // "linux/amd64"),
                              }
                            ]}')
 
-          # Use a heredoc to safely output the multi-line JSON string
           echo "matrix<<EOF" >> $GITHUB_OUTPUT
           echo "$matrix" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -72,16 +61,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
-
-      # - name: Build Container Image
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: ./Containerfile
-      #     target: base
-      #     platforms: linux/amd64, linux/amd64/v2
-      #     cache-from: type=gha
-      #     cache-to: type=gha,mode=max
 
       - name: Build Container Image
         uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
@@ -125,75 +104,3 @@ jobs:
           tags: ${{ matrix.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  publish-kickstart:
-    name: Publish Kickstart Files to GitHub Pages
-    runs-on: ubuntu-latest
-    needs: [build-and-publish-image, prepare-build]
-    strategy:
-      matrix: ${{ fromJSON(needs.prepare-build.outputs.matrix) }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
-
-      - name: Create directory for Kickstart files
-        run: mkdir -p ./kickstart_files
-
-      - name: Generate Kickstart file for ${{ matrix.host }}
-        run: |
-          # The image path is now taken directly from the matrix
-          GHCR_IMAGE_PATH="${{ matrix.image_name }}:latest"
-          echo "Generating Kickstart for ${{ matrix.host }} with image: ${GHCR_IMAGE_PATH}"
-
-          # Create a host-specific kickstart file from the template
-          cp default.ks ./kickstart_files/${{ matrix.host }}.ks
-
-          # Substitute the placeholder with the actual image path
-          sed -i "s|%%GHCR_IMAGE_PATH%%|${GHCR_IMAGE_PATH}|g" ./kickstart_files/${{ matrix.host }}.ks
-
-          echo "Updated ${{ matrix.host }}.ks content:"
-          cat ./kickstart_files/${{ matrix.host }}.ks
-
-      - name: Upload Kickstart artifact for ${{ matrix.host }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: kickstart-files-${{ matrix.host }}
-          path: ./kickstart_files/${{ matrix.host }}.ks
-
-  deploy-kickstarts:
-      name: Deploy all Kickstart files to GitHub Pages
-      runs-on: ubuntu-latest
-      needs: publish-kickstart
-      steps:
-        - name: Setup GitHub Pages
-          uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
-
-        - name: Download all Kickstart artifacts
-          uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-          with:
-            pattern: kickstart-files-*
-            path: ./pages/
-
-        - name: Upload Pages artifact
-          uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
-          with:
-            path: ./pages/
-
-        - name: Deploy to GitHub Pages
-          id: deployment
-          uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
-
-  notify-urls:
-    name: Notify Kickstart URLs
-    runs-on: ubuntu-latest
-    needs: [deploy-kickstarts, prepare-build]
-    if: success()
-    strategy:
-      matrix:
-        host: ${{ fromJSON(needs.prepare-build.outputs.hosts) }}
-    steps:
-      - name: Echo Kickstart URL for ${{ matrix.host }}
-        run: |
-          REPO_NAME_LOWER=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
-          KICKSTART_URL="https://${{ github.repository_owner }}.github.io/${REPO_NAME_LOWER}/${{ matrix.host }}.ks"
-          echo "Kickstart for ${{ matrix.host }} is deploying to: ${KICKSTART_URL}"
