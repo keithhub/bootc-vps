@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices"
+  ],
+  "labels": ["dependencies"],
+  "prHourlyLimit": 5,
+  "prConcurrentLimit": 5,
+  "packageRules": [
+    {
+      "description": "Group AlmaLinux bootc base image tag + digest updates",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["quay.io/almalinuxorg/almalinux-bootc"],
+      "groupName": "AlmaLinux base images"
+    },
+    {
+      "description": "Group Kanidm server image tag + digest updates",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "docker.io/kanidm/server",
+        "kanidm/server"
+      ],
+      "groupName": "Kanidm"
+    },
+    {
+      "description": "Group GitHub Actions dependency updates",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions"
+    }
+  ]
+}
