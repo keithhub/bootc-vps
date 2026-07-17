@@ -14,13 +14,15 @@
       "groupName": "AlmaLinux base images"
     },
     {
-      "description": "Group Kanidm server image tag + digest updates",
+      "description": "Kanidm: pin digests/patches freely; only allow one minor step (upgrade support policy)",
       "matchDatasources": ["docker"],
       "matchPackageNames": [
         "docker.io/kanidm/server",
         "kanidm/server"
       ],
-      "groupName": "Kanidm"
+      "groupName": "Kanidm",
+      "versioning": "semver",
+      "allowedVersions": "<{{major}}.{{add minor 2}}.0"
     },
     {
       "description": "Group GitHub Actions dependency updates",
