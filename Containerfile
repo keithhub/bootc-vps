@@ -2,7 +2,7 @@
 # Base
 #
 
-FROM quay.io/almalinuxorg/almalinux-bootc:10.2@sha256:1bf84d0720dca762a9b1e3cf7143a3dad2b0f85ea7848a3e9405b37472510371 AS base
+FROM quay.io/almalinuxorg/almalinux-bootc:10.2@sha256:affae7bde1c852c5350d54c3e9dd0c82908b3d079b5cfcbe4c389330c4166aa8 AS base
 
 # Lifted from AlmaLinux atomic-desktop
 
